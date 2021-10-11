@@ -1,0 +1,54 @@
+<h1 class="page-title">Projects</h1>  
+
+  <div>
+    <button class="btn-create-new" type="submit" (click)="clickAddNewProject()">Create project</button>
+  </div>
+  <br>
+<table class="table">  
+  <tr style="background-color: #f9f9f9">  
+    <th>Title</th>
+    <th>Description</th>
+    <th>Organization</th>
+    <!-- <th>Start</th>
+    <th>End</th>
+    <th>Role</th>
+    <th>Link</th> -->
+    <th>Skills</th>
+    <th>Attachments</th>
+    <th>Type</th>
+    <th>Create</th>
+    <th>Updated</th>
+    <th></th>
+  </tr>  
+  
+  <tr *ngFor="let project of projects">  
+    <!-- <td><a href="@Url.Action("AboutProject", "Project", new { Id = proj.Id })">proj.Title</a></td> -->
+    <td>{{project.title}}</td>
+    <td>{{project.description}}</td>
+    <td>{{project.organization}}</td>
+    <!-- <td>{{project.start}}</td>
+    <td>{{project.end}}</td>
+    <td>{{project.role}}</td>
+    <td>{{project.link}}</td> -->
+    <td>{{project.skills}}</td>
+    <td>{{project.attachments}}</td>
+    <td>{{project.projectType}}</td>
+    <td>{{project.create}}</td>
+    <td>{{project.update}}</td>
+    <td>  
+      <button type="submit" class="btn btn-primary" (click)="clickEdit(project.id)">
+        Edit
+      </button>
+        <!-- @if (!string.IsNullOrEmpty(Model.UserRole))
+        {
+            <form asp-action="EditProject" asp-controller="Project" asp-route-id="@proj.Id">
+                <button type="submit">
+                    Редагувати
+                </button>
+            </form>
+
+        } -->
+
+    </td>
+  </tr>  
+</table>  
