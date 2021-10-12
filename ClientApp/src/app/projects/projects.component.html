@@ -19,11 +19,13 @@
     <th>Create</th>
     <th>Updated</th>
     <th></th>
+    <th></th>
   </tr>  
   
   <tr *ngFor="let project of projects">  
     <!-- <td><a href="@Url.Action("AboutProject", "Project", new { Id = proj.Id })">proj.Title</a></td> -->
-    <td>{{project.title}}</td>
+    <td><a type="button" class="link-redirect" (click)="redirectToProject(project.id)">{{project.title}}</a>
+      </td>
     <td>{{project.description}}</td>
     <td>{{project.organization}}</td>
     <!-- <td>{{project.start}}</td>
@@ -49,6 +51,11 @@
 
         } -->
 
+    </td>
+    <td>  
+      <button type="submit" class="btn btn-primary" (click)="clickDelate(project.id)">
+        Delete
+      </button>
     </td>
   </tr>  
 </table>  

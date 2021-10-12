@@ -31,7 +31,7 @@ namespace Erp_ang2.Controllers.Projects
         }
 
 
-        // GET: api/progects  
+        // GET: /progects  
         [HttpGet]
         public async Task<ActionResult<GetProjectListVm>> Get()
         {
@@ -87,7 +87,7 @@ namespace Erp_ang2.Controllers.Projects
             return Ok(prVm);
         }
 
-        // GET: api/Progects/5  
+        // GET: /Progects/5  
         [HttpGet("{projectId}", Name = "Get")]
         public async Task<Project> GetProgectById(long projectId)
         {
@@ -99,13 +99,60 @@ namespace Erp_ang2.Controllers.Projects
             return progect;
         }
 
-        // POST: api/Progects  
+        // GET: /Progects/about/5  
+        [HttpGet("about/{projectId}")]
+        public async Task<ActionResult<AboutProjectVm>> AboutProject(long projectId)
+        {
+
+            var prAll = await dbContext.Projects
+                .Include(p => p.Attachments)
+                .Include(p => p.ProjectType)
+                .Include(p => p.Skills)
+                .ToListAsync();
+            var updatePr = prAll.FirstOrDefault(p => p.Id == projectId);
+
+            var allTypes = this.dbContext.Types.ToList();
+
+            var model = new AboutProjectVm()
+            {
+
+                Id = updatePr.Id,
+                Title = updatePr.Title,
+                Description = updatePr.Description,
+                Organization = updatePr.Organization,
+                End = updatePr.End != null || updatePr.End.HasValue ? updatePr.End.Value.ToString("dd.MM.yyyy hh:mm") : "",
+
+                Start = updatePr.Start != null || updatePr.Start.HasValue ? updatePr.Start.Value.ToString("dd.MM.yyyy") : "",
+                Role = updatePr.Role,
+
+                AttachmentVm = updatePr.Attachments.Select(f => new AboutFileVm()
+                {
+                    Id = f.Id,
+                    File = f.File,
+                    FileName = f.FileName,
+                    Data = f.DateCreate.ToString("dd.MM.yyyy")
+                }).ToList(),
+                SkillsVm = updatePr.Skills == null ? new List<AboutSkillVm>() : updatePr.Skills.Select(s => new AboutSkillVm()
+                {
+                    Id = s.Id,
+                    SkillName = s.Name,
+
+                }).ToList(),
+
+                ProjectType = updatePr.ProjectType.NameType,
+                Create = updatePr.Created.ToString("dd.MM.yyyy"),
+                Update = updatePr.Updated.ToString("dd.MM.yyyy"),
+            };
+            return model;
+        }
+
+        // POST: /Progects  
         [HttpPost]
         public async Task<ActionResult<long>> Post([FromForm] CreateProjectVm request)
         {
             var newProject = new Project();
             long typeId = 0;
-            if (long.TryParse(request.SelectedType, out typeId)
+            if (long.TryParse(request.SelectedTypeId, out typeId)
                 && !string.IsNullOrEmpty(request.Title) && !string.IsNullOrEmpty(request.Description))
             {
                 var type = this.dbContext.Types.FirstOrDefaultAsync(t => t.Id == typeId);
@@ -135,32 +182,61 @@ namespace Erp_ang2.Controllers.Projects
         }
 
 
-        public string EditProject([FromForm] EditProjectVm model)
+        // PUT: /Progects/5  
+        [HttpPut("{id}")]
+        public async Task<ActionResult<bool>> EditProject(long id, [FromForm] EditProjectVm model)
         {
-            var updatePr = dbContext.Projects
+            var updatePr = await dbContext.Projects
                 .Include(p => p.Attachments)
-                .FirstOrDefault(p => p.Id == model.Id);
+                .FirstOrDefaultAsync(p => p.Id == id);
+            var res = false;
+            if (updatePr != null)
+            {
+                if(!string.IsNullOrEmpty(model.Title))
+                {
+                    updatePr.Title = model.Title;
+                }
 
-            updatePr.Title = model.Title;
-            updatePr.Description = model.Description;
-            updatePr.Organization = model.Organization;
-            updatePr.Role = model.Role;
-            updatePr.Link = model.Link;
+                if (!string.IsNullOrEmpty(model.Description))
+                {
+                    updatePr.Description = model.Description;
+                }
 
-            updatePr.ProjectTypeId = type.Id;
-            updatePr.Updated = DateTime.Now;
+                if (!string.IsNullOrEmpty(model.Organization))
+                {
+                    updatePr.Organization = model.Organization;
+                }
 
-            dbContext.Update(updatePr);
-            dbContext.SaveChanges();
-            mes = "Project змінено";
+                long typeId = 0;
+                if (long.TryParse(model.SelectedTypeId, out typeId))
+                {
+                    updatePr.ProjectTypeId = typeId;
+                }
+                updatePr.Updated = DateTime.Now;
 
-            return mes;
+                dbContext.Update(updatePr);
+                await dbContext.SaveChangesAsync();
+                res = true;
+            }
+            return res;
         }
 
-        // DELETE: api/ApiWithActions/5  
+
+        // DELETE: /Progects/5  
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task<ActionResult<bool>> Delete(long id)
         {
+            var pr = await dbContext.Projects
+           .FirstOrDefaultAsync(p => p.Id == id);
+            var res = false;
+            if (pr != null)
+            {
+               res = true;
+                dbContext.Projects.Remove(pr);
+
+                dbContext.SaveChanges();
+            }
+            return res;
         }
     }
 }

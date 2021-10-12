@@ -13,3 +13,10 @@
 .select-type {
     width: 50%;
 }
+
+/* .is-warning-input {
+    border: 1px solid red;
+} */
+    .warning-title {
+        color: red;
+    }

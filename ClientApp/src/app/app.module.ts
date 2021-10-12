@@ -18,6 +18,7 @@ import { ProjectsComponent } from './projects/projects.component';
 import { ProjectsService } from './services/projects.service';
 import { ProjectTypesService } from './services/projectTypes.service';
 import { EditProjectsComponent } from './editProjects/editProjects.component';
+import { AboutProjectsComponent } from './aboutProject/aboutProjects.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { EditProjectsComponent } from './editProjects/editProjects.component';
     FetchDataComponent,
     ProjectsComponent,
     AddNewProjectComponent,
-    EditProjectsComponent
+    EditProjectsComponent,
+    AboutProjectsComponent
   ],
   imports: [
     CommonModule,
@@ -48,6 +50,7 @@ import { EditProjectsComponent } from './editProjects/editProjects.component';
       { path: 'progects', component: ProjectsComponent }, 
       { path: 'addNewProject', component: AddNewProjectComponent },
       { path: 'editProjects', component: EditProjectsComponent },
+      { path: 'aboutProject', component: AboutProjectsComponent },
     ])
   ],
   providers: [ ProjectsService, 

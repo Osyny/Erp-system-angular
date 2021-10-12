@@ -21,6 +21,10 @@ import { IProject, ProjectsService, ProjectVm } from "../services/projects.servi
       }
       
     ngOnInit(): void {
+     this.getProjects();
+    }
+
+    getProjects() {
       this.subscriptions.push(this.progectsService.getProgects()
       .subscribe(res => {
 
@@ -38,14 +42,30 @@ import { IProject, ProjectsService, ProjectVm } from "../services/projects.servi
      }
 
      async clickEdit(Id: number) {
-       debugger
       await this.router.navigate(['/editProjects'], {
         relativeTo: this.activatedRoute,    
         queryParams: {
           projectId: Id,
         }  
       })
+     }
 
+     clickDelate(id: number) {
+      this.subscriptions.push(this.progectsService.deleteproject(id)
+      .subscribe(res => {
+
+        this.getProjects();
+      }))
+     }
+
+    async redirectToProject(id: number) {
+      debugger
+      await this.router.navigate(['/aboutProject'], {
+        relativeTo: this.activatedRoute,    
+        queryParams: {
+          projectId: id,
+        } 
+      }) 
      }
 
     ngOnDestroy(): void {

@@ -1,7 +1,12 @@
 
-.is-warning-input {
+.is-warning-input-title{
     border: 1px solid red;
 }
+
+.is-warning-input-description{
+    border: 1px solid red;
+}
+
     .warning-title {
         color: red;
     }

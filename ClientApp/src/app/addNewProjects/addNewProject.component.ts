@@ -23,8 +23,7 @@ import { AllowProgectType, ITipe, ProjectTypesService } from "../services/projec
         title: new FormControl("", Validators.required),
         description: new FormControl("", Validators.required),
         organization: new FormControl("", Validators.required),
-        selectTypeId: new FormControl(""),
-      //  link: new FormControl(""),
+        selectedType: new FormControl(""),
     });
 
     constructor(private progectTypesService: ProjectTypesService,
@@ -35,7 +34,6 @@ import { AllowProgectType, ITipe, ProjectTypesService } from "../services/projec
     } 
 
     ngOnInit(): void {
-       let y = this.selectedType;
         this.subscriptions.push(this.progectTypesService.getProjectTipes()
         .subscribe(res => {
  
@@ -44,18 +42,13 @@ import { AllowProgectType, ITipe, ProjectTypesService } from "../services/projec
              this.progectTypes = res;
         }))
      }
-
-    // get selectedTypeId(): string {
-    //     debugger
-    //     return this.form ? this.form.get('selectedType').value : '';
-    // }
  
     async onSubmit() {
         let formData = new FormData();
         formData.append('title', this.form.value.title);
         formData.append('description', this.form.value.description);
         formData.append('organization', this.form.value.organization);
-        formData.append('selectedType', this.selectedType.toString());
+        formData.append('selectedTypeId', this.form.value.selectedType.id.toString());
 
         this.subscriptions.push(this.progectsService.addProject(formData)
         .subscribe( (res) => {
@@ -71,7 +64,7 @@ import { AllowProgectType, ITipe, ProjectTypesService } from "../services/projec
      }
 
      checkValid() {
-         let res = this.form.value.title === "" || this.form.value.description  === "" || this.form.value.organization  === "";
+         let res = this.form.value.title === "" || this.form.value.description  === "";
         return res;
     }
 

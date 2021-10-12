@@ -22,7 +22,7 @@ export interface ITipe {
 }
 
 export enum AllowProgectType {
-    Work,
+    Work = 1,
     Book,
     Course,
     Blog,

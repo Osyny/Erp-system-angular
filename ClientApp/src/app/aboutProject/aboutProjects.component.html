@@ -1,0 +1,85 @@
+<div >
+    <div class="form-group" id="container">
+        <label><b>Title: </b></label>
+        <span >{{projectVm.title}}</span>
+       
+    </div>
+    <br />
+    <div class="form-group" id="container">
+        <label><b>Description: </b></label>
+        <span> {{projectVm.description}}</span>
+    </div>
+    <br />
+    <div class="form-group" id="container">
+        <label><b>Organization: </b></label>
+        <span>{{projectVm.organization}}</span>
+        
+    </div>
+    <br />
+    <!-- <div id="container">
+        <label for="Start"><b>Start</b></label>
+        <div for="End"><b>@Model.Start</b></div>
+      
+    </div>
+    <br />
+    <div id="container">
+        <label for="End"><b>End</b></label>
+        <div><b>@Model.End</b></div>    
+    </div>
+    <br />
+    <br /> -->
+    <div>
+      
+        <div id="container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>File</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <div *ngFor="let file of projectVm.attachments">
+                        <tr>
+                            <td>{{file.file}}</td>
+                            <td>{{file.date}}</td>
+                        </tr>
+                    </div>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <br />
+    <div>   
+        <div id="container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Skill</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <div *ngFor="let skill of projectVm.skills">
+                        <tr><td>{{skill.skillName}}</td> </tr>
+                    </div>
+                </tbody>
+            </table>
+
+        </div>
+
+    </div>
+    <hr />
+    <div class="form-group" id="container">
+        <label for="Link"><b>Type</b></label>
+        <span>{{projectVm.projectType}}</span>
+    </div>
+    <div class="form-group" id="container">
+        <label for="Link"><b>Last update: </b></label>
+        <span> {{projectVm.update}}</span>
+    </div>
+    <!-- <hr />
+    <form asp-action="Index" asp-controller="Project">
+        <button type="submit" class="btn btn-primary"><b>Go to progects</b></button>
+    </form> -->
+</div>
+<hr />

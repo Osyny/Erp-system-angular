@@ -2,6 +2,7 @@
 import { HttpClient } from "@angular/common/http";
 import { Inject, Injectable } from "@angular/core";
 import { Observable } from "rxjs";
+import { ITipe } from "./projectTypes.service";
 
 @Injectable()  
 export class ProjectsService {  
@@ -22,10 +23,22 @@ export class ProjectsService {
     return this.http.get<ProjectVm>(this.baseUrl+`/${projectId}`); 
   }
 
+  getAboutProgectById(projectId: number) {
+    return this.http.get<AboutProjectVm>(this.baseUrl+`/about/${projectId}`); 
+  }
+
+  editProject(projectId: number, data: FormData) {
+    return this.http.put<boolean>(this.baseUrl+`/${projectId}`, data); 
+  }
+
   addProject(data: FormData): Observable<any> {
-      let r = this.http.post<number>(this.baseUrl, data);
-    return r;
-    }
+    let r = this.http.post<number>(this.baseUrl, data);
+  return r;
+  }
+
+  deleteproject(projectId: number) {
+    return this.http.delete<boolean>(this.baseUrl+`/${projectId}`);
+  }
 }
 
 
@@ -39,14 +52,42 @@ export interface ProjectVm {
   id: number,
   title: string,
   description: string,
-  Organization: string,
+  organization: string,
   end: string,
   start: string,
   role: string,
   link: string,
   skill: string,
   attachments: string,
-  projectType: string,
+  projectType: ITipe,
   create: string,
   update: string
+}
+
+export interface AboutProjectVm {
+  id: number,
+  title: string,
+  description: string,
+  organization: string,
+  end: string,
+  start: string,
+  role: string,
+  link: string,
+  skills: ISkillsVm,
+  attachments: IFilesVm,
+  projectType: ITipe,
+  create: string,
+  update: string
+}
+
+export interface IFilesVm {
+  id: number,
+  file: string,
+  fileName: string,
+  date: Date
+}
+
+export interface ISkillsVm {
+  id: number,
+  skillName: string
 }

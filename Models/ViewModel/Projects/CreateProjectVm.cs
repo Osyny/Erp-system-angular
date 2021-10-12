@@ -12,6 +12,6 @@ namespace Erp_ang2.Models.ViewModel.Projects
         public string Description { get; set; }
         public string Organization { get; set; }
 
-        public string SelectedType { get; set; }
+        public string SelectedTypeId { get; set; }
     }
 }

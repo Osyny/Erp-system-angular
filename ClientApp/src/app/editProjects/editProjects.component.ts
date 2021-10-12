@@ -14,7 +14,7 @@ import { AllowProgectType, ITipe, ProjectTypesService } from "../services/projec
          progectVm: ProjectVm | undefined;
         subscriptions: SubscriptionLike[] = [];
         progectTypes: ITipe[] = [];
-        projectId!: number;
+        projectId: number = 0;
         isWarningTitle: boolean = false;
         isWarningDescription: boolean = false;
         isWarningOrganization: boolean = false;
@@ -24,7 +24,7 @@ import { AllowProgectType, ITipe, ProjectTypesService } from "../services/projec
             title: new FormControl("", Validators.required),
             description: new FormControl("", Validators.required),
             organization: new FormControl("", Validators.required),
-            selectTypeId: new FormControl(""),
+            selectedType: new FormControl(""),
         });
 
         constructor(private progectsService: ProjectsService,
@@ -34,12 +34,11 @@ import { AllowProgectType, ITipe, ProjectTypesService } from "../services/projec
         }
         
     ngOnInit(): void {
-    
-        let projectId = this.activatedRoute.snapshot.queryParamMap.get('projectId');
-        var Id: number = +projectId;
+        let prId = this.activatedRoute.snapshot.queryParamMap.get('projectId');
+       this.projectId = +prId;
 
-        this.subscriptions.push(this.progectsService.getProgectById(Id)
-        .subscribe(res => {
+        this.subscriptions.push(this.progectsService.getProgectById(this.projectId)
+        .subscribe(project => {
             this.subscriptions.push(this.progectTypesService.getProjectTipes()
             .subscribe(res => {
         
@@ -47,9 +46,17 @@ import { AllowProgectType, ITipe, ProjectTypesService } from "../services/projec
     
                  this.progectTypes = res;
             }));
-            if(!res) return;
-    debugger
-            this.progectVm = res;
+
+            if(!project) return;
+
+            this.form.addControl('id', new FormControl( this.projectId));
+            this.form.patchValue({
+              title: project.title,
+              description: project.description,
+              organization: project.organization,
+              selectedType: project.projectType
+              
+            });
         }));
     }
 
@@ -58,20 +65,23 @@ import { AllowProgectType, ITipe, ProjectTypesService } from "../services/projec
         formData.append('title', this.form.value.title);
         formData.append('description', this.form.value.description);
         formData.append('organization', this.form.value.organization);
-        formData.append('selectedType', this.selectedType.toString());
+        formData.append('selectedTypeId', this.form.value.selectedType.id.toString());
 
-        this.subscriptions.push(this.progectsService.editProject(formData)
+        this.subscriptions.push(this.progectsService.editProject(this.projectId, formData)
         .subscribe( (res) => {
 
             if(!res) return;
-
-            if(res === 0)  return;
     
             this.router.navigate(['/progects'], {
                 relativeTo: this.activatedRoute,      
             })
       }));  
      }
+    
+    checkValid() {
+        let res = this.form.value.title === "" || this.form.value.description  === "";
+       return res;
+   }
 
     ngOnDestroy(): void {
         this.subscriptions.forEach(

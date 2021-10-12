@@ -5,7 +5,7 @@
           <label>Title:</label>
           <input name="title" type="text" class="form-control" placeholder="Enter title..." 
           formControlName="title" autocomplete="title"
-          (ngModelChange)="onTargetMonetChange('title')" [class.is-warning-input]="isWarningTitle">
+          (ngModelChange)="onTargetMonetChange('title')" [class.is-warning-input-title]="isWarningTitle">
           <div class="warning-box">
             <div [hidden]="!isWarningTitle" class="warning-title">
                 Can't be empty "title".
@@ -16,7 +16,7 @@
             <label>Description:</label>
             <input name="description" type="text" class="form-control" placeholder="Enter description..." formControlName="description" 
             autocomplete="description"
-            (ngModelChange)="onTargetMonetChange('description')">
+            (ngModelChange)="onTargetMonetChange('description')" [class.is-warning-input-description]="isWarningDescription">
             <div class="warning-box">
                 <div [hidden]="!isWarningDescription" class="warning-title">
                     Can't be empty "description".
@@ -29,9 +29,10 @@
         </div>
         <div class="form-group">
             <label>Type:</label>
-            <select value="selectTypeId" class="form-control" name="selectedTypeId">
-                <option [value]="type.id" *ngFor="let type of progectTypes" > {{type.nameType}}</option>       
-              </select>
+              <select class="form-control select-type" formControlName="selectedType">
+                <option value="default">--Select a type--</option>
+                <option *ngFor="let type of progectTypes" [ngValue]="type">{{type?.nameType}}</option>
+            </select>
         </div>
     </div>
     
