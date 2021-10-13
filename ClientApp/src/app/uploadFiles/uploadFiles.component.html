@@ -1,0 +1,13 @@
+<div class="row" id="container">
+    <form formValidator [formGroup]="form"  (ngSubmit)="onSubmit()">
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label>File:</label>
+                <input type="file" name="file" class="form-control" (change)="onSelectFile($event)" formControlName="file" >
+            </div>
+        </div>
+        <br />
+        <hr />
+        <button type="submit" class="btn btn-primary"><b>Save</b></button>
+    </form>
+</div>

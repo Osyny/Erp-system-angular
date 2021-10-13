@@ -51,7 +51,7 @@ namespace Erp_ang2.Controllers.Projects
                   Role = pr.Role,
                   Link = string.IsNullOrEmpty(pr.Link) ? "" : pr.Link,
                   Skills = pr.Skills.Count != 0 ? string.Join(", ", pr.Skills.Select(s => s.Name).ToArray()) : "",
-                  Attachments = pr.Attachments.Count != 0 ? string.Join(", ", pr.Attachments.Select(s => s.File).ToArray()) : "",
+                  Attachments = pr.Attachments.Count != 0 ? string.Join(", ", pr.Attachments.Select(s => s.FileName).ToArray()) : "",
                   ProjectType = pr.ProjectType.NameType,
                   Create = pr.Created.ToString("dd.MM.yyyy"),
                   Update = pr.Updated.ToString("dd.MM.yyyy")
@@ -74,16 +74,6 @@ namespace Erp_ang2.Controllers.Projects
             if (progects.Any())
                 prVm.ProjectsVm = progects;
 
-            //var roles = this.roleManager.Roles.ToList();
-            //var allUsers = dbContext.ListUsers.Include(u => u.AccountUser).ToList();
-            //var mess = "";
-            //if (roles.Count == 0 && !roles.Any() && !allUsers.Any())
-            //{
-            //    var createToDb = new CreateStartData(roleManager, dbContext, userManager);
-            //    var res = createToDb.StartCreate();
-            //    mess = res.Result;
-            //}
-            //prVm.Message = mess;
             return Ok(prVm);
         }
 
@@ -130,7 +120,7 @@ namespace Erp_ang2.Controllers.Projects
                     Id = f.Id,
                     File = f.File,
                     FileName = f.FileName,
-                    Data = f.DateCreate.ToString("dd.MM.yyyy")
+                    Date = f.DateCreate.ToString("dd.MM.yyyy")
                 }).ToList(),
                 SkillsVm = updatePr.Skills == null ? new List<AboutSkillVm>() : updatePr.Skills.Select(s => new AboutSkillVm()
                 {

@@ -2,6 +2,7 @@
 import { HttpClient } from "@angular/common/http";
 import { Inject, Injectable } from "@angular/core";
 import { Observable } from "rxjs";
+import { IFilesVm } from "./files.service";
 import { ITipe } from "./projectTypes.service";
 
 @Injectable()  
@@ -74,17 +75,10 @@ export interface AboutProjectVm {
   role: string,
   link: string,
   skills: ISkillsVm,
-  attachments: IFilesVm,
+  attachmentVm: IFilesVm,
   projectType: ITipe,
   create: string,
   update: string
-}
-
-export interface IFilesVm {
-  id: number,
-  file: string,
-  fileName: string,
-  date: Date
 }
 
 export interface ISkillsVm {

@@ -38,7 +38,7 @@ namespace Erp_ang2.Models.ViewModel.Projects
         public long Id { get; set; }
         public string File { get; set; }
         public string FileName { get; set; }
-        public string Data { get; set; }
+        public string Date { get; set; }
     }
     public class AboutSkillVm
     {

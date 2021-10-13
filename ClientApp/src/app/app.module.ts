@@ -19,6 +19,8 @@ import { ProjectsService } from './services/projects.service';
 import { ProjectTypesService } from './services/projectTypes.service';
 import { EditProjectsComponent } from './editProjects/editProjects.component';
 import { AboutProjectsComponent } from './aboutProject/aboutProjects.component';
+import { UploadFilesComponent } from './uploadFiles/uploadFiles.component';
+import { FilesService } from './services/files.service';
 
 @NgModule({
   declarations: [
@@ -30,7 +32,8 @@ import { AboutProjectsComponent } from './aboutProject/aboutProjects.component';
     ProjectsComponent,
     AddNewProjectComponent,
     EditProjectsComponent,
-    AboutProjectsComponent
+    AboutProjectsComponent,
+    UploadFilesComponent
   ],
   imports: [
     CommonModule,
@@ -51,10 +54,12 @@ import { AboutProjectsComponent } from './aboutProject/aboutProjects.component';
       { path: 'addNewProject', component: AddNewProjectComponent },
       { path: 'editProjects', component: EditProjectsComponent },
       { path: 'aboutProject', component: AboutProjectsComponent },
+      { path: 'uploadFiles', component: UploadFilesComponent },
     ])
   ],
   providers: [ ProjectsService, 
     ProjectTypesService,
+    FilesService,
     { provide: HTTP_INTERCEPTORS, useClass: AuthorizeInterceptor, multi: true }
   ],
   bootstrap: [AppComponent]

@@ -41,13 +41,15 @@ import { AllowProgectType, ITipe, ProjectTypesService } from "../services/projec
         .subscribe(project => {
             this.subscriptions.push(this.progectTypesService.getProjectTipes()
             .subscribe(res => {
-        
+   
                 if(!res) return;
     
                  this.progectTypes = res;
             }));
 
             if(!project) return;
+
+            this.progectVm = project;
 
             this.form.addControl('id', new FormControl( this.projectId));
             this.form.patchValue({
@@ -81,6 +83,24 @@ import { AllowProgectType, ITipe, ProjectTypesService } from "../services/projec
     checkValid() {
         let res = this.form.value.title === "" || this.form.value.description  === "";
        return res;
+   }
+
+   async clickAddNewFile(projectId: number) {
+    await this.router.navigate(['/uploadFiles'], {
+        relativeTo: this.activatedRoute,    
+        queryParams: {
+          projectId: projectId,
+        } 
+      }) 
+   }
+
+   clickDelate(id: number) {
+       debugger;
+       this.subscriptions.push(this.progectsService.deleteproject(id)
+      .subscribe(res => {
+
+      //  this.getProjects();
+      }))
    }
 
     ngOnDestroy(): void {
