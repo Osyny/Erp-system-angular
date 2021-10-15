@@ -10,8 +10,9 @@ namespace Erp_ang2.Models.Entities
         public long Id { get; set; }
 
         public ApplicationUser AccountUser { get; set; }
-        public long AccountUserId { get; set; }
+       // public long AccountUserId { get; set; }
 
         public DateTime DateRegister { get; set; }
+        public string Email { get; set; }
     }
 }

@@ -13,12 +13,18 @@ export class ProjectsService {
   constructor(private http: HttpClient, @Inject('BASE_URL') baseUrl: string)  
   {  
     this.baseUrl = baseUrl + 'progects';  
-  }  
-  
-  getProgects() {  
-   let res = this.http.get<IProject>(this.baseUrl); 
+  } 
+
+  getProgects(userName: string) {
+    debugger  
+   let res = this.http.get<IProject>(`${this.baseUrl}/getAll/${userName}`); 
     return  res;
   }  
+  
+  // getProgects() {  
+  //  let res = this.http.get<IProject>(this.baseUrl); 
+  //   return  res;
+  // }  
 
   getProgectById(projectId: number) {
     return this.http.get<ProjectVm>(this.baseUrl+`/${projectId}`); 

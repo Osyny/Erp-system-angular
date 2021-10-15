@@ -1,7 +1,8 @@
 
 import { Component, Inject, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { SubscriptionLike } from "rxjs";
+import { Observable, SubscriptionLike } from "rxjs";
+import { AuthorizeService, IUser } from "src/api-authorization/authorize.service";
 import { IProject, ProjectsService, ProjectVm } from "../services/projects.service";
 
 @Component({  
@@ -13,10 +14,13 @@ import { IProject, ProjectsService, ProjectVm } from "../services/projects.servi
       progectsVm: IProject | undefined;
       subscriptions: SubscriptionLike[] = [];
       projects: ProjectVm[] = [];
+      isAuthenticated: Observable<boolean>;
+      public userName: IUser | undefined;
 
       constructor(private progectsService: ProjectsService,
         private activatedRoute: ActivatedRoute,
-        private router: Router
+        private router: Router,
+        private authorizeService: AuthorizeService,
         ) {
       }
       
@@ -25,14 +29,23 @@ import { IProject, ProjectsService, ProjectVm } from "../services/projects.servi
     }
 
     getProjects() {
-      this.subscriptions.push(this.progectsService.getProgects()
-      .subscribe(res => {
 
-          if(!res) return;
+      this.subscriptions.push(this.authorizeService.getUser().subscribe((user) => {
 
-          this.progectsVm = res;
-          this.projects = this.progectsVm.projectsVm;
-      }))
+        if(user) 
+          this.userName = user;
+ 
+        let userName = this.userName!==undefined ? this.userName!.name : "empty";
+        this.subscriptions.push(this.progectsService.getProgects(userName)
+        .subscribe(res => {
+  
+            if(!res) return;
+  
+            this.isAuthenticated = this.authorizeService.isAuthenticated();
+            this.progectsVm = res;
+            this.projects = this.progectsVm.projectsVm;
+        }))
+    }));
     }
 
     async clickAddNewProject() {
@@ -59,7 +72,6 @@ import { IProject, ProjectsService, ProjectVm } from "../services/projects.servi
      }
 
     async redirectToProject(id: number) {
-      debugger
       await this.router.navigate(['/aboutProject'], {
         relativeTo: this.activatedRoute,    
         queryParams: {

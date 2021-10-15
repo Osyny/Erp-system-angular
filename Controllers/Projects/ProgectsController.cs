@@ -41,10 +41,37 @@ namespace Erp_ang2.Controllers.Projects
         }
 
 
-        // GET: /progects  
-        [HttpGet]
-        public async Task<ActionResult<GetProjectListVm>> Get()
+        // GET: /progects/getAll/userName 
+        [HttpGet("getAll/{userName}")]
+        public async Task<ActionResult<GetProjectListVm>> GetAll(string userName)
         {
+            var allUser = await dbContext.ListUsers.Include(u => u.AccountUser).ToListAsync();
+            if (userName != "empty")
+            {
+                var appUser = await this.userManager.FindByEmailAsync(userName);
+                var existUser = allUser.FirstOrDefault(u => u.AccountUser == appUser);
+                if (existUser == null)
+                {
+                    var register = allUser.FirstOrDefault(u => u.AccountUser.Email == userName);
+                    var existUs = allUser.FirstOrDefault(u => u.AccountUser == appUser);
+
+                    if (await userManager.IsInRoleAsync(appUser, "User") == false)
+                    {
+                        await this.userManager.AddToRoleAsync(appUser, "User");
+                    }
+
+                    var newUser = new User()
+                    {
+                        AccountUser = appUser,
+                        DateRegister = DateTime.Now,
+                        Email = userName
+                    };
+                    dbContext.ListUsers.Add(newUser);
+                    await dbContext.SaveChangesAsync();
+
+                }
+            }
+
             var progects = await this.dbContext.Projects
                 .Include(p => p.Skills)
                  .Include(p => p.ProjectType)
@@ -81,8 +108,7 @@ namespace Erp_ang2.Controllers.Projects
                 IdentityResult resultAdmin = await this.roleManager.CreateAsync(new IdentityRole("Admin"));
                 IdentityResult resultUser = await this.roleManager.CreateAsync(new IdentityRole("User"));
 
-                var admin = await dbContext.ListUsers.Include(u => u.AccountUser)
-              .FirstOrDefaultAsync(u => u.AccountUser.Email == "admin@gmail.com");
+                var admin =  allUser.FirstOrDefault(u => u.AccountUser.Email == "admin@gmail.com");
 
                 if (admin == null)
                 {
@@ -98,8 +124,8 @@ namespace Erp_ang2.Controllers.Projects
                         var newUser = new User()
                         {
                             AccountUser = accountUser,
-                            DateRegister = DateTime.Now
-
+                            DateRegister = DateTime.Now,
+                            Email = accountUser.Email
                         };
                         dbContext.ListUsers.Add(newUser);
                         await dbContext.SaveChangesAsync();         
@@ -114,8 +140,7 @@ namespace Erp_ang2.Controllers.Projects
 
             //var us = User.Identity.Name;
             //var userName = HttpContext.User.Identity.Name;
-
-            var u = _currentUserService;
+           // var u = _currentUserService;
 
             if (progects.Any())
                 prVm.ProjectsVm = progects;
@@ -188,20 +213,17 @@ namespace Erp_ang2.Controllers.Projects
         {
             var newProject = new Project();
 
-            var rolesUser = new Roles(this.roleManager, this.userManager);
-
-            var allUsers = dbContext.ListUsers.Include(u => u.AccountUser).ToListAsync();
-            string userRole = "No_Authorize";
+            string userRole = "";
             if (!string.IsNullOrEmpty(request.UserName))
             {
-                //var curentuser = await dbContext.ListUsers
-                //    .Include(u => u.AccountUser)
-                //    .FirstOrDefaultAsync(u => u.AccountUser.Email == request.UserName);
-                var curentuser = await this.userManager.FindByEmailAsync(request.UserName);
+                var rolesUser = new ManagerRoles(this.userManager);
+                var curentuser = await dbContext.ListUsers
+                    .Include(u => u.AccountUser)
+                    .FirstOrDefaultAsync(u => u.Email == request.UserName);
 
                 if (curentuser != null)
                 {
-                    userRole = rolesUser.GetRole(curentuser);
+                    userRole = rolesUser.GetRole(curentuser.AccountUser);
                 }
             }
 
@@ -216,7 +238,6 @@ namespace Erp_ang2.Controllers.Projects
                 newProject.Description = request.Description;
                 newProject.Organization = request.Organization;
                 newProject.Role = userRole;
-                // newProduct.Link = request.Link;
 
                 newProject.ProjectTypeId = typeId;
 

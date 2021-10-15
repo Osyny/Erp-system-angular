@@ -7,22 +7,17 @@ using System.Threading.Tasks;
 
 namespace Erp_ang2.Helpers
 {
-    public class Roles
+    public class ManagerRoles
     {
-        private RoleManager<IdentityRole> roleManager;
         private UserManager<ApplicationUser> userManager;
 
-        public Roles(RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
+        public ManagerRoles(UserManager<ApplicationUser> userManager)
         {
-            this.roleManager = roleManager;
             this.userManager = userManager;
         }
         public string GetRole(ApplicationUser user)
         {
-            var roles = this.roleManager.Roles.ToList();
-
             string userRole = "";
-
 
             var uRoles = this.userManager.GetRolesAsync(user).Result;
 

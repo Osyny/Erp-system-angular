@@ -4,3 +4,19 @@
     border: 1px solid #afb2b5;
     border-radius: 6px;
 }
+
+td {
+    max-width: 100px;
+    word-wrap: break-word;
+
+}
+
+a {
+    max-width: 90px;
+    word-wrap: break-word;
+}
+
+.attention {
+    color: brown;
+    font-weight: 500;
+}

@@ -63,13 +63,13 @@ import { AllowProgectType, ITipe, ProjectTypesService } from "../services/projec
         formData.append('description', this.form.value.description);
         formData.append('organization', this.form.value.organization);
         formData.append('selectedTypeId', this.form.value.selectedType.id.toString());
-        debugger
+
         this.userName !== undefined ? formData.append('userName', this.userName!.name) :  formData.append('userName', "");;
 
 
         this.subscriptions.push(this.progectsService.addProject(formData)
         .subscribe( (res) => {
-debugger
+
             if(!res) return;
 
             if(res === 0)  return;

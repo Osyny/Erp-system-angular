@@ -15,6 +15,12 @@
         <span>{{projectVm?.organization}}</span>
         
     </div>
+    <br>
+    <div id="container">
+        <label><b>Role: </b></label>
+        <span class="attention" *ngIf="projectVm?.role===''">No authorize</span>
+      <span *ngIf="projectVm?.role!==''">{{projectVm?.role}}</span>   
+    </div>
     <br />
     <div  id="container">
         <table class="table">
