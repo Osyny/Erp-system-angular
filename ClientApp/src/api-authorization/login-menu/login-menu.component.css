@@ -1,0 +1,11 @@
+a {
+    font-weight: 600;
+}
+
+a.hover {
+    color:red;
+}
+
+span { 
+    font-weight: 400;
+}

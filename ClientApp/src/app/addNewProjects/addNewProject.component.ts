@@ -1,7 +1,10 @@
 import { Component, OnInit } from "@angular/core";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
-import { SubscriptionLike } from "rxjs";
+import { Observable, SubscriptionLike } from "rxjs";
+import { map } from "rxjs/operators";
+
+import { AuthorizeService, IUser } from "src/api-authorization/authorize.service";
 import { ProjectsService } from "../services/projects.service";
 import { AllowProgectType, ITipe, ProjectTypesService } from "../services/projectTypes.service";
 
@@ -25,8 +28,11 @@ import { AllowProgectType, ITipe, ProjectTypesService } from "../services/projec
         organization: new FormControl("", Validators.required),
         selectedType: new FormControl(""),
     });
-
-    constructor(private progectTypesService: ProjectTypesService,
+    public isAuthenticated: Observable<boolean>;
+    public userName: IUser | null;
+  
+    constructor(private authorizeService: AuthorizeService,
+        private progectTypesService: ProjectTypesService,
         private progectsService: ProjectsService,
         private activatedRoute: ActivatedRoute,
         private router: Router
@@ -40,19 +46,30 @@ import { AllowProgectType, ITipe, ProjectTypesService } from "../services/projec
             if(!res) return;
 
              this.progectTypes = res;
+             
+             this.isAuthenticated = this.authorizeService.isAuthenticated();
+             this.subscriptions.push(this.authorizeService.getUser().subscribe((user) => {
+
+                if(!user) return;
+                this.userName = user
+            }));
         }))
      }
  
     async onSubmit() {
+
         let formData = new FormData();
         formData.append('title', this.form.value.title);
         formData.append('description', this.form.value.description);
         formData.append('organization', this.form.value.organization);
         formData.append('selectedTypeId', this.form.value.selectedType.id.toString());
+        debugger
+        this.userName !== undefined ? formData.append('userName', this.userName!.name) :  formData.append('userName', "");;
+
 
         this.subscriptions.push(this.progectsService.addProject(formData)
         .subscribe( (res) => {
-
+debugger
             if(!res) return;
 
             if(res === 0)  return;

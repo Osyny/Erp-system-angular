@@ -1,12 +1,18 @@
 ﻿using Erp_ang2.Data;
 using Erp_ang2.Helpers;
+using Erp_ang2.Models;
 using Erp_ang2.Models.Entities;
 using Erp_ang2.Models.ViewModel.Projects;
+using Erp_ang2.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Erp_ang2.Controllers.Projects
@@ -16,18 +22,22 @@ namespace Erp_ang2.Controllers.Projects
     public class ProgectsController : ControllerBase
     {
         private readonly ApplicationDbContext dbContext;
-        //private readonly RoleManager<IdentityRole> roleManager;
-        //private readonly UserManager<AccountUser> userManager;
+        private readonly RoleManager<IdentityRole> roleManager;
+        private readonly UserManager<ApplicationUser> userManager;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ICurrentUserService _currentUserService;
 
-        public ProgectsController(
-            // RoleManager<IdentityRole> roleManager,
-            //UserManager<AccountUser> userManager,
-            ApplicationDbContext dbContext)
+        public ProgectsController(ICurrentUserService currentUserService,
+             RoleManager<IdentityRole> roleManager,
+            UserManager<ApplicationUser> userManager,
+            ApplicationDbContext dbContext,
+            IHttpContextAccessor httpContextAccessor)
         {
-            //  this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            //this.roleManager = roleManager;
-            //this.userManager = userManager;
+            this.roleManager = roleManager;
+            this.userManager = userManager;
             this.dbContext = dbContext;
+            _httpContextAccessor = httpContextAccessor;
+            _currentUserService = currentUserService;
         }
 
 
@@ -65,11 +75,47 @@ namespace Erp_ang2.Controllers.Projects
             var mess = "";
             var allType = dbContext.Types.ToList();
 
+            var roles = this.roleManager.Roles.ToList();
+            if (roles.Count == 0 && !roles.Any())
+            {
+                IdentityResult resultAdmin = await this.roleManager.CreateAsync(new IdentityRole("Admin"));
+                IdentityResult resultUser = await this.roleManager.CreateAsync(new IdentityRole("User"));
+
+                var admin = await dbContext.ListUsers.Include(u => u.AccountUser)
+              .FirstOrDefaultAsync(u => u.AccountUser.Email == "admin@gmail.com");
+
+                if (admin == null)
+                {
+                    ApplicationUser accountUser = new ApplicationUser { Email = "admin@gmail.com", UserName = "admin@gmail.com" };
+                    var res = await this.userManager.CreateAsync(accountUser, "Q1234_qaz");
+                    await this.userManager.AddToRoleAsync(accountUser, "Admin");
+
+                    string emailConfirmationToken = await this.userManager.GenerateEmailConfirmationTokenAsync(accountUser);
+                    var confirmResult = await this.userManager.ConfirmEmailAsync(accountUser, emailConfirmationToken);
+
+                    if (res.Succeeded)
+                    {
+                        var newUser = new User()
+                        {
+                            AccountUser = accountUser,
+                            DateRegister = DateTime.Now
+
+                        };
+                        dbContext.ListUsers.Add(newUser);
+                        await dbContext.SaveChangesAsync();         
+                    }
+                }
+            }
             if (allType.Count == 0)
             {
                 var createDefaultData = new DefaultDataTypes(this.dbContext);
                 mess = createDefaultData.GenerateDefaultData();
             }
+
+            //var us = User.Identity.Name;
+            //var userName = HttpContext.User.Identity.Name;
+
+            var u = _currentUserService;
 
             if (progects.Any())
                 prVm.ProjectsVm = progects;
@@ -141,6 +187,24 @@ namespace Erp_ang2.Controllers.Projects
         public async Task<ActionResult<long>> Post([FromForm] CreateProjectVm request)
         {
             var newProject = new Project();
+
+            var rolesUser = new Roles(this.roleManager, this.userManager);
+
+            var allUsers = dbContext.ListUsers.Include(u => u.AccountUser).ToListAsync();
+            string userRole = "No_Authorize";
+            if (!string.IsNullOrEmpty(request.UserName))
+            {
+                //var curentuser = await dbContext.ListUsers
+                //    .Include(u => u.AccountUser)
+                //    .FirstOrDefaultAsync(u => u.AccountUser.Email == request.UserName);
+                var curentuser = await this.userManager.FindByEmailAsync(request.UserName);
+
+                if (curentuser != null)
+                {
+                    userRole = rolesUser.GetRole(curentuser);
+                }
+            }
+
             long typeId = 0;
             if (long.TryParse(request.SelectedTypeId, out typeId)
                 && !string.IsNullOrEmpty(request.Title) && !string.IsNullOrEmpty(request.Description))
@@ -151,7 +215,7 @@ namespace Erp_ang2.Controllers.Projects
 
                 newProject.Description = request.Description;
                 newProject.Organization = request.Organization;
-                newProject.Role = "User";
+                newProject.Role = userRole;
                 // newProduct.Link = request.Link;
 
                 newProject.ProjectTypeId = typeId;
@@ -182,7 +246,7 @@ namespace Erp_ang2.Controllers.Projects
             var res = false;
             if (updatePr != null)
             {
-                if(!string.IsNullOrEmpty(model.Title))
+                if (!string.IsNullOrEmpty(model.Title))
                 {
                     updatePr.Title = model.Title;
                 }
@@ -221,7 +285,7 @@ namespace Erp_ang2.Controllers.Projects
             var res = false;
             if (pr != null)
             {
-               res = true;
+                res = true;
                 dbContext.Projects.Remove(pr);
 
                 dbContext.SaveChanges();

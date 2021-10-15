@@ -10,9 +10,8 @@
     <th>Description</th>
     <th>Organization</th>
     <!-- <th>Start</th>
-    <th>End</th>
+    <th>End</th>-->
     <th>Role</th>
-    <th>Link</th> -->
     <th>Skills</th>
     <th>Attachments</th>
     <th>Type</th>
@@ -28,10 +27,10 @@
       </td>
     <td>{{project.description}}</td>
     <td>{{project.organization}}</td>
-    <!-- <td>{{project.start}}</td>
-    <td>{{project.end}}</td>
+    <!-- <td>{{project.start}}</td> -->
+    <!-- <td>{{project.end}}</td> -->
     <td>{{project.role}}</td>
-    <td>{{project.link}}</td> -->
+   
     <td>{{project.skills}}</td>
     <td>{{project.attachments}}</td>
     <td>{{project.projectType}}</td>
@@ -53,9 +52,11 @@
 
     </td>
     <td>  
-      <button type="submit" class="btn btn-primary" (click)="clickDelate(project.id)">
-        Delete
-      </button>
+      <div *ngIf="">
+        <button type="submit" class="btn btn-primary" (click)="clickDelate(project.id)">
+          Delete
+        </button>
+      </div>
     </td>
   </tr>  
 </table>  
